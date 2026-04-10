@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Retained Interest Calculator - 2 Step</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+
+<style>
+body {
+  font-size: 0.95rem;
+}
+@media (min-width: 992px) {
+  body {
+    font-size: 0.85rem;
+  }
+
+  .card { padding: 1rem !important; }
+  .mb-3 { margin-bottom: 0.5rem !important; }
+  h4, h5 { font-weight: 500; margin-bottom: 0.75rem; }
+  label { margin-bottom: 0.25rem; font-weight: 500; }
+
+  input.form-control {
+    padding: 0.5rem 0.75rem;
+  }
+} 
+
+
+#pdfContent {
+  padding: 20px;
+  font-family: 'Helvetica', sans-serif;
+}
+#pdfContent h5 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.pdf-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.pdf-row label {
+  font-weight: 500;
+}
+.pdf-row .value {
+  font-weight: bold;
+}
+
+
+</style>
+
+</head>
+
+<body class="bg-light">
+
+<div class="container-fluid mt-4 px-2 px-md-4">
+    
+    <div class="row justify-content-center">
+        
+        <div class="col-12 col-md-10">
+            <a href="Menu.html" 
+   class="btn btn-sm me-2" 
+   style="background-color:#02a7b6; color:#fff;">
+  ← Back
+</a><hr>
+<!-- Step 1: Borrower Details -->
+<div id="step1" class="card shadow-sm p-2">
+    
+  <div class="row">
+    <!-- Column 1 -->
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">Borrower Company</label>
+        <input type="text" id="borrowerCompany" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Borrower Name</label>
+        <input type="text" id="borrowerName" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Security Address</label>
+        <input type="text" id="securityAddress" class="form-control">
+      </div>
+
+      <button id="securityAddressBtn" class="btn me-2 btn-sm" style="background-color:#02a7b6; border-color:#02a7b6; color:#fff;">+ Security Address</button>
+      
+      <!--Additional Security Address-->
+      <div id="secondSecuritySection" class="mb-4 border rounded p-3 bg-light d-none">
+        <div class="mb-3">
+            <label for="propertyType" class="form-label">Property Type</label>
+            <select class="form-select" id="secondPropertyType" name="second_property_type">
+                <option value="" selected disabled>Select property type</option>
+                <option value="residential">Residential</option>
+                <option value="commercial">Commercial</option>
+                <option value="mixed_use">Mixed Use</option>
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">2nd Security Address</label>
+            <input type="text" id="secondAddress" class="form-control">
+        </div>
+      
+        <div class="mb-3">
+            <label class="form-label">Purchase Price (£)</label>
+            <input type="number" id="secondPurchasePrice" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Market Value (£)</label>
+            <input type="number" id="secondMarketValue" class="form-control">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Broker Name</label>
+        <input type="text" id="brokerName" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Broker Firm</label>
+        <input type="text" id="brokerFirm" class="form-control">
+      </div>
+    </div>  
+    <!--2nd Col-->
+    <div class="col-md-6">
+        <h6>Criteria</h6>
+      <div class="mb-4 border rounded p-3 bg-light">
+        <label for="creditTier" class="form-label">Credit Tier</label>
+                            <select class="form-select" id="creditTier" name="Credit_tier" required>
+                                <option value="" selected disabled>  </option>
+                                <option value="tier_1">Tier 1</option>
+                                <option value="tier_2">Tier 2</option>
+                                <option value="tier_3">Tier 3</option>
+                            </select>
+        <label for="foreignNational" class="form-label">Nationality</label>
+                            <select class="form-select" id="nationality" name="nationality" required>
+                                <option value="" selected disabled>  </option>
+                                <option value="uk_national">UK National</option>
+                                <option value="foreign_national">Foreign National</option>
+                            </select>      
+         <label for="planning" class="form-label">Planning Permission</label>
+                            <select class="form-select" id="planning" name="planning">
+                                <option value="" selected disabled>  </option>
+                                <option value="consent-not-required">Consent Not Required</option>
+                                <option value="consent_required_and_in_place">Consent Required and in Place</option>
+                                 <option value="consent_required_and_not_in_place">Consent Required and NOT in Place</option>
+                            </select>                       
+      </div>
+    </div>
+  </div>
+</div>
+
+<br>
+            <!-- Step 2: Loan Calculations -->
+            <div id="step2" class="card shadow-sm p-2">
+                <div class="row">
+                    <!-- Left Column: Inputs -->
+                    <div class="col-12 col-lg-6">
+                        <!--Property type-->
+                        <div class="mb-3">
+                            <label for="propertyType" class="form-label">Property Type</label>
+                            <select class="form-select" id="propertyType" name="property_type" required>
+                                <option value="" selected disabled>Select property type</option>
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="mixed_use">Mixed Use</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Purchase Price (£)</label>
+                            <input type="number" id="purchasePrice" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Property Value (£)</label>
+                            <input type="number" id="propertyValue" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Loan Term (Months)</label>
+                            <input type="number" id="loanMonths" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                             <label class="form-label">Additional Broker Fee</label>
+                             <input type="text" id="additionalBrokerFee" class="form-control" value="0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Interest Rate (% per month)
+                                <small class="text-muted">(editable)</small>
+                            </label>
+                            <input type="number" step="0.01" id="interestRateInput" class="form-control">
+                        </div>
+
+                        
+
+                        <!-- LTV & LTC Overrides -->
+                        <div class="mb-3">
+                            <label class="form-label">LTV (%)</label>
+                            <input type="number" step="0.01" id="ltvInput" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">LTC (%)</label>
+                            <input type="number" step="0.01" id="ltcInput" class="form-control">
+                        </div>
+                        
+                        
+
+                        <!-- Amend Fees -->
+                        <button class="btn btn-outline-secondary w-100 mb-2"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#feeOverrides">
+                            Amend Fees
+                        </button>
+
+                        <div class="collapse" id="feeOverrides">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="feeModeSwitch">
+                                    <label class="form-check-label" for="feeModeSwitch">
+                                        Absolute (£) Fees
+                                    </label>
+                                </div>
+
+                                <!-- Percentage Fees -->
+                                <div id="percentageFees">
+                                    <div class="mb-2">
+                                        <label class="form-label">Lender Arrangement Fee (%)</label>
+                                        <input type="number" step="0.01" id="lenderFeePct" class="form-control" value="1">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Broker Arrangement Fee (%)</label>
+                                        <input type="number" step="0.01" id="brokerFeePct" class="form-control" value="1">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Exit Fee (%)</label>
+                                        <input type="number" step="0.01" id="exitFeePct" class="form-control" value="0.25">
+                                    </div>
+                                </div>
+
+                                <!-- Absolute Fees -->
+                                <div id="absoluteFees" class="d-none">
+                                    <div class="mb-2">
+                                        <label class="form-label">Lender Arrangement Fee (£)</label>
+                                        <input type="number" id="lenderFeeAbs" class="form-control" value="0">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Broker Arrangement Fee (£)</label>
+                                        <input type="number" id="brokerFeeAbs" class="form-control" value="0">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Exit Fee (£)</label>
+                                        <input type="number" id="exitFeeAbs" class="form-control" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Borrower Summary + Results -->
+                    <div class="col-12 col-lg-6" id="pdfContent">
+                        
+
+                        <!-- Borrower Summary -->
+                        <div class="mb-4 border rounded p-3 bg-light">
+                            <h5 class="text-center mb-3">Borrower Summary</h5>
+                            <div class="row">
+                                <div class="col-6"><strong>Borrower Company:</strong><br><span id="resBorrowerCompany">—</span></div>
+                                <div class="col-6"><strong>Borrower Name:</strong><br><span id="resBorrowerName">—</span></div>
+                                <div class="col-6 mt-2"><strong>Security Address:</strong><br><span id="resSecurityAddress">—</span></div>
+                                <div class="col-6 mt-2 d-none" id="secondSecuritySummary"><strong>2nd Security Address:</strong><br><span id="resSecondSecurityAddress">—</span></div>
+                                <div class="col-6 mt-2"><strong>Broker Name:</strong><br><span id="resBrokerName">—</span></div>
+                                <div class="col-6 mt-2"><strong>Broker Firm:</strong><br><span id="resBrokerFirm">—</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Loan Results -->
+                        <div class="border rounded p-3 bg-light">
+                            <h5 class="text-center mb-3">Loan Terms</h5>
+
+                            <div class="row mb-3">
+                                <div class="col-12 col-md-6">
+                                    <small class="text-muted">Gross Loan Amount</small>
+                                    <div class="fw-bold fs-4" id="loanAmount">—</div>
+                                </div>
+                                <div class="col-12 col-md-6 mt-2 mt-md-0">
+                                    <small class="text-muted">Net Loan After Deductions</small>
+                                    <div class="fw-bold fs-4 text-success" id="netLoan">—</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">LTV</small>
+                                    <div class="fw-bold" id="ltv">—</div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">LTC</small>
+                                    <div class="fw-bold" id="ltc">—</div>
+                                </div>
+                                 
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Retained Interest</small>
+                                    <div class="fw-bold" id="retainedInterest">—</div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Arrangement Fee</small>
+                                    <div class="fw-bold" id="arrangementFee">—</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-6 col-md-6">
+                                    <small class="text-muted">Exit Fee</small>
+                                    <div class="fw-bold" id="exitFee">—</div>
+                                </div>
+
+                                <div class="col-6 col-md-6">
+                                    <small class="text-muted">Additional Broker Fee</small>
+                                    <div class="fw-bold" id="displayAdditionalBrokerFee">—</div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="text-danger text-center mt-2" id="error"></div>
+                        </div>
+                      </div>      
+
+                      
+
+
+                        <!-- Profitability Section -->
+                        <div id="profitabilitySection" class="border rounded p-3 bg-light mt-3" style="display: none;">
+                            <h5 class="text-center mb-3">Profitability</h5>
+
+                            <div class="mb-3 row">
+                                <div class="col-4 col-md-4">
+                                    <label class="form-label">Funding Rate (%)</label>
+                                    <input type="number" step="0.01" id="fundingRate" class="form-control" value="9.75">
+                                </div>
+
+                                <div class="col-4 col-md-4">
+                                    <label class="form-label">Abigail Lending Rate (%)</label>
+                                    <div class="fw-bold mt-2" id="abigailLendingRate">—</div>
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Abigail Interest Spread (%)</label>
+                                    <div class="fw-bold mt-2" id="abigailInterestSpread">—</div>
+                                </div>
+                            </div>
+
+
+                            <div class="mb-3 row">
+                                <div class="col-4">
+                                    <label class="form-label"></label>
+                                    <div class="fw-bold mt-2" id=""></div>
+                                </div>
+
+                                <div class="col-4">
+                                    
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">Abigail Interest Share (£)</label>
+                                    <div class="fw-bold mt-2" id="abigailInterestShare">—</div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row mb-3 g-2">
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Arr.Fee (£)</label>
+                                    <div class="fw-bold mt-2" id="profitArrangementFee">—</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Exit Fee (£)</label>
+                                    <div class="fw-bold mt-2" id="profitExitFee">—</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Profit (£)</label>
+                                    <div class="fw-bold mt-2 text-success" id="totalProfitability">—</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label">Profit (%)</label>
+                                    <div class="fw-bold mt-2 text-primary" id="grossProfitPct">—</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    
+                </div>
+                <!--Advisor / Password section-->
+                        <div class="mb-3">
+                            <label class="form-label">Profitability Auth
+                            </label>
+                            <input type="text" id="advisor" class="form-control">
+                        </div>
+                <button id="profitabilityBtn" class="btn btn-primary d-none" onclick="toggleProfitability(event)"> Show Profitability</button>
+                <button id="downloadPdfBtn" class="btn btn-success w-100 mt-3">Download PDF</button>
+                <button id="downloadExcelBtn" class="btn mt-2" style="background-color: #02a7b6; color: #fff;">Download Excel</button>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    document.getElementById("secondAddress")?.addEventListener("input", updateSecondSecuritySummary);
+    
+
+function updateSecondSecuritySummary() {
+  const secondAddress = document.getElementById("secondAddress")?.value.trim();
+  const summaryRow = document.getElementById("secondSecuritySummary");
+  const summaryValue = document.getElementById("resSecondSecurityAddress");
+
+  if (secondAddress) {
+    summaryValue.textContent = secondAddress;
+    summaryRow.classList.remove("d-none");
+  } else {
+    summaryRow.classList.add("d-none");
+    summaryValue.textContent = "—";
+  }
+}
+
+</script>
+
+<script>
+  document.getElementById("securityAddressBtn").addEventListener("click", () => {
+    const section = document.getElementById("secondSecuritySection");
+    section.classList.toggle("d-none");
+  });
+</script>
+
+<script>
+function toggleProfitability(event) {
+    const section = document.getElementById('profitabilitySection');
+    const button = event.target;
+    const advisor = document.getElementById('advisor').value.trim();
+
+    // Check for password
+    if (!advisor.toLowerCase().includes("justin")) {
+        alert("Access denied. Enter 'Justin' to view profitability.");
+        return;
+    }
+
+    if (section.style.display === 'none' || section.style.display === '') {
+        section.style.display = 'block';
+        button.textContent = 'Hide Profitability';
+    } else {
+        section.style.display = 'none';
+        button.textContent = 'Show Profitability';
+    }
+}
+</script>
+<script>
+const advisorInput = document.getElementById("advisor");
+const profitabilityBtn = document.getElementById("profitabilityBtn");
+
+advisorInput.addEventListener("input", () => {
+  const value = advisorInput.value.trim().toLowerCase();
+
+  if (value === "justin") {
+    profitabilityBtn.classList.remove("d-none");
+  } else {
+    profitabilityBtn.classList.add("d-none");
+
+    // also auto-hide the section if they lose access
+    document.getElementById("profitabilitySection").style.display = "none";
+    profitabilityBtn.textContent = "Show Profitability";
+  }
+});
+
+
+</script>
+
+
+<script>
+    const additionalBrokerFeeInput = document.getElementById("additionalBrokerFee");
+    const propertyTypeSelect = document.getElementById("propertyType");
+    const creditTierSelect = document.getElementById("creditTier");
+    const nationalitySelect = document.getElementById("nationality");
+    const planningSelect = document.getElementById("planning");
+        
+    let rateAutoFilled = false;
+
+
+// Your existing calculation logic
+const rateBands = [
+    { min: 26000, max: 50000, rate: 1.20 },
+    { min: 50001, max: 85000, rate: 1.00 },
+    { min: 85001, max: 100000, rate: 0.95 },
+    { min: 100001, max: 150000, rate: 0.89 },
+    { min: 150001, max: 400000, rate: 0.86 },
+    { min: 400001, max: 1000000, rate: 0.85 },
+    { min: 1000001, max: 10000000, rate: 0.82 }
+];
+
+const gbp = v => v.toLocaleString("en-GB",{style:"currency",currency:"GBP"});
+const pct = v => v.toFixed(2) + "%";
+const getRateBand = a => rateBands.find(b => a >= b.min && a <= b.max);
+
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+
+
+
+// --- 2nd security live update ---
+document.getElementById("secondAddress")
+  ?.addEventListener("input", updateSecondSecuritySummary);
+
+
+// Fee mode toggle
+feeModeSwitch.addEventListener("change", () => {
+    percentageFees.classList.toggle("d-none", feeModeSwitch.checked);
+    absoluteFees.classList.toggle("d-none", !feeModeSwitch.checked);
+    calculate();
+});
+
+function calculate() {
+    // --- Step 1: Get inputs ---
+    const purchaseMain = +purchasePrice.value || 0;
+    const purchaseSecond = +document.getElementById("secondPurchasePrice")?.value || 0;
+    const totalPurchase = purchaseMain + purchaseSecond;
+
+    const valueMain = +propertyValue.value || 0;
+    const valueSecond = +document.getElementById("secondMarketValue")?.value || 0;
+    const totalValue = valueMain + valueSecond;
+
+    const months = +loanMonths.value || 0;
+    let rate = +interestRateInput.value;
+    const ltvOverride = +ltvInput.value;
+    const ltcOverride = +ltcInput.value;
+    const additionalBrokerFeeRaw = additionalBrokerFeeInput?.value || "";
+    const displayAdditionalBrokerFee = document.getElementById("displayAdditionalBrokerFee");
+
+    // --- Reset outputs ---
+    loanAmount.textContent =
+    netLoan.textContent =
+    ltv.textContent =
+    ltc.textContent =
+    retainedInterest.textContent =
+    arrangementFee.textContent =
+    exitFee.textContent =
+    abigailLendingRate.textContent =
+    abigailInterestSpread.textContent =
+    abigailInterestShare.textContent =
+    profitArrangementFee.textContent =
+    profitExitFee.textContent =
+    totalProfitability.textContent =
+    grossProfitPct.textContent = "—";
+
+    displayAdditionalBrokerFee.textContent = "—";
+    error.textContent = "";
+
+    if (!totalPurchase || !totalValue || !months) return;
+
+    // --- Default LTV / LTC ---
+    let defaultLTV = 0.75;
+    let defaultLTC = 0.85;
+
+    if (propertyTypeSelect.value === "mixed_use") {
+        defaultLTV -= 0.05;
+        defaultLTC -= 0.05;
+    }
+
+    if (creditTierSelect.value === "tier_2") {
+    defaultLTV -= 0.05;
+    defaultLTC -= 0.05;
+    } else if (creditTierSelect.value === "tier_3") {
+        defaultLTV -= 0.10;
+        defaultLTC -= 0.10;
+    }
+
+
+    if (nationalitySelect.value === "foreign_national") {
+        defaultLTV -= 0.05;
+        defaultLTC -= 0.05;
+    }
+
+    if (
+    propertyTypeSelect.value === "commercial" &&
+    planningSelect.value === "consent_required_and_in_place"
+    ) {
+        defaultLTV -= 0.05;
+        defaultLTC -= 0.05;
+    }
+
+     if (
+    propertyTypeSelect.value === "commercial" &&
+    planningSelect.value === "consent_required_and_not_in_place"
+    ) {
+        defaultLTV -= 0.10;
+        defaultLTC -= 0.10;
+    }
+
+    // --- Calculate base loan ---
+    let loan = Math.min(
+        totalValue * defaultLTV,
+        totalPurchase * defaultLTC
+    );
+
+    // --- Apply manual overrides last ---
+    if (ltvOverride) loan = (ltvOverride / 100) * totalValue;
+    if (ltcOverride) loan = Math.min(loan, (ltcOverride / 100) * totalPurchase);
+
+    // --- Display LTV / LTC ---
+    loanAmount.textContent = gbp(loan);
+    ltv.textContent = pct((loan / totalValue) * 100);
+    ltc.textContent = pct((loan / totalPurchase) * 100);
+
+    // --- Determine rate if not provided ---
+    if (!rateAutoFilled && interestRateInput.value.trim() === "") {
+    const band = getRateBand(loan);
+    if (!band) return;
+    rate = band.rate;
+    interestRateInput.value = rate.toFixed(2);
+    rateAutoFilled = true;
+    }
+
+
+    // --- Retained Interest ---
+    const totalRetained = loan * (rate / 100) * months;
+    retainedInterest.textContent = gbp(totalRetained);
+
+    // --- Fees ---
+    let arrangement = 0, exit = 0, profitLenderArrangement = 0;
+
+    if (!feeModeSwitch.checked) {
+        arrangement = loan * ((+lenderFeePct.value + +brokerFeePct.value) / 100);
+        profitLenderArrangement = loan * (+lenderFeePct.value / 100);
+        exit = loan * (+exitFeePct.value / 100);
+    } else {
+        arrangement = (+lenderFeeAbs.value || 0) + (+brokerFeeAbs.value || 0);
+        profitLenderArrangement = +lenderFeeAbs.value || 0;
+        exit = +exitFeeAbs.value || 0;
+    }
+
+    arrangementFee.textContent = gbp(arrangement);
+    exitFee.textContent = gbp(exit);
+
+    // --- Net Loan ---
+    netLoan.textContent = gbp(loan - arrangement - totalRetained);
+
+    // --- Display Additional Broker Fee ---
+    displayAdditionalBrokerFee.textContent = additionalBrokerFeeRaw;
+
+    // --- Profitability ---
+    const fundingRateVal = +fundingRate.value || 0;
+    const lendingRate = rate * 12;
+    const interestSpread = lendingRate - fundingRateVal;
+    const interestShare = (interestSpread / lendingRate) * totalRetained;
+
+    abigailLendingRate.textContent = pct(lendingRate);
+    abigailInterestSpread.textContent = pct(interestSpread);
+    abigailInterestShare.textContent = gbp(interestShare);
+
+    profitArrangementFee.textContent = gbp(profitLenderArrangement);
+    profitExitFee.textContent = gbp(exit);
+
+    const totalProfit = interestShare + profitLenderArrangement + exit;
+    totalProfitability.textContent = gbp(totalProfit);
+
+    const grossProfitPercentage = loan ? (totalProfit / loan) * 100 : 0;
+    grossProfitPct.textContent = pct(grossProfitPercentage);
+}
+
+
+
+// Input listeners
+[
+    purchasePrice, propertyValue, loanMonths, interestRateInput,
+    lenderFeePct, brokerFeePct, exitFeePct,
+    lenderFeeAbs, brokerFeeAbs, exitFeeAbs,
+    ltvInput, ltcInput, creditTier, nationality,planning, secondMarketValue, secondPurchasePrice,
+    fundingRate, additionalBrokerFeeInput, propertyTypeSelect,
+].forEach(el => el.addEventListener("input", calculate));
+
+[purchasePrice, propertyValue].forEach(el =>
+    el.addEventListener("input", () => rateAutoFilled = false)
+);
+
+// PDF Export
+document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+
+    let y = 20; // starting vertical offset
+    const leftMargin = 20;
+    const pageWidth = 210; // A4 width
+    const pageHeight = 297; // A4 height
+
+    // Helper function to add a header
+    function addHeader(title) {
+        doc.setFillColor(196, 215, 155); // #C4D79B
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        const textWidth = doc.getTextWidth(title);
+        const cellWidth = pageWidth - leftMargin * 2;
+        doc.rect(leftMargin, y - 3, cellWidth, 8, "F"); // filled rectangle
+        doc.text(title, pageWidth/2, y + 3, { align: "center" });
+        y += 10;
+    }
+
+    // Helper function to add a row
+    function addRow(label, value, isCurrency=false, isPercent=false) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+
+        let displayValue = value;
+        if (isCurrency) displayValue = "£" + Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits:2});
+        if (isPercent) displayValue = Number(value).toFixed(2) + "%";
+
+        doc.text(label || "", leftMargin, y);
+        doc.text(displayValue || "", pageWidth - leftMargin, y, { align: "right" });
+        y += 7;
+
+        // Add page break if nearing bottom
+        if (y > pageHeight - 30) doc.addPage(), y = 20;
+    }
+
+    // ---------------- BORROWER SUMMARY ----------------
+    addHeader("Borrower Summary");
+    addRow("Borrower Company", borrowerCompany.value || "—");
+    addRow("Borrower Name", borrowerName.value || "—");
+    addRow("Security Address(s)", 
+        [securityAddress.value, document.getElementById("secondAddress")?.value]
+            .filter(a => a && a.trim() !== "")
+            .join(", ") || "—"
+    );
+    addRow("Broker Name", brokerName.value || "—");
+    addRow("Broker Firm", brokerFirm.value || "—");
+    y += 5;
+
+    // ---------------- LOAN RESULTS ----------------
+    // Remove £ and commas
+    function parseCurrency(text) {
+        return Number(text.replace(/[^0-9.-]+/g,"")) || 0;
+    }
+    addHeader("Loan Parameters");
+    addRow("Gross Loan Amount", parseCurrency(loanAmount.textContent), true);
+    addRow("Total Arrangement Fee", parseCurrency(arrangementFee.textContent), true);
+    addRow("Net Loan After Deductions", parseCurrency(netLoan.textContent), true);
+    addRow("LTV", ltv.textContent || "—");
+    addRow("LTC", ltc.textContent || "—");
+    addRow("Loan Term", `${loanMonths.value || "0"} months`);
+    addRow("Purchase Price", purchasePrice.value || "0", true);
+    addRow("Market Value", propertyValue.value || "0", true);
+    addRow("Total Retained Interest", parseCurrency(retainedInterest.textContent), true);
+    addRow("Broker Share of Arrangement Fee %", brokerFeePct.value || "0", false, true);
+    y += 5;
+
+    // ---------------- PROFITABILITY ----------------
+    addHeader("Profitability");
+    addRow("Funding Rate (%)", fundingRate.value || "0", false, true);
+    addRow("Abigail Lending Rate (%)", abigailLendingRate.textContent || "0");
+    addRow("Abigail Interest Spread (%)", abigailInterestSpread.textContent || "0");
+    addRow("Abigail Interest Share (£)", parseCurrency(abigailInterestShare.textContent), true);
+    addRow("Arr. Fee (£)", parseCurrency(profitArrangementFee.textContent), true);
+    addRow("Exit Fee (£)", parseCurrency(profitExitFee.textContent), true);
+    addRow("Profit (£)", parseCurrency(totalProfitability.textContent), true);
+    addRow("Profit (%)", parseCurrency(grossProfitPct.textContent), true);
+    y += 5;
+
+    // ---------------- IMPORTANT PARAGRAPH ----------------
+   const paragraph = 
+    "IMPORTANT: This Offer In Principle is illustrative only and is subject to satisfactory valuation, underwriting and legal due diligence. " +
+    "This Offer In Principle creates no legal duties or obligations and is not an offer or a commitment of any kind on the part of Abigail Finance Ltd or its affiliates. " +
+    "At any time prior to the formal execution of a loan transaction, we may terminate discussions without liability.";
+
+doc.setFontSize(9);
+doc.setFont("helvetica", "bold");
+doc.setFillColor(235, 241, 222); // #ebf1de
+
+const paraHeight = 40; // make it taller to fit multiple lines
+const paraWidth = pageWidth - leftMargin * 2;
+doc.rect(leftMargin, y, paraWidth, paraHeight, "F");
+
+// Split text into lines that fit the box width
+const lines = doc.splitTextToSize(paragraph, paraWidth - 4); // small padding inside box
+const lineHeight = 4.5; // approximate line height
+const textHeight = lines.length * lineHeight;
+
+// Compute starting Y so that text is vertically centered
+let startY = y + (paraHeight - textHeight) / 2 + lineHeight; // add first line offset
+
+// Draw each line
+lines.forEach(line => {
+    doc.text(line, pageWidth / 2, startY, { align: "center" });
+    startY += lineHeight;
+});
+
+y += paraHeight + 5;
+
+
+    // ---------------- FOOTER ----------------
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 128, 0); // #008000
+
+    doc.text("www.abigailfinance.co.uk", pageWidth - leftMargin, y, { align: "right" });
+    y += 4;
+    doc.text("Abigail Finance is the trading name of Abigail Finance Ltd | Registered in England | Registered Number: 16529900", pageWidth - leftMargin, y, { align: "right" });
+    y += 4;
+    doc.text("Registered Address: 6th Floor, 9 Appold Street, London, EC2A 2AP", pageWidth - leftMargin, y, { align: "right" });
+
+    // ---------------- DOWNLOAD PDF ----------------
+    doc.save(`${securityAddress.value || "Loan-Calculator-Results"}.pdf`);
+});
+
+
+
+
+// Excel Download--
+document.getElementById("downloadExcelBtn").addEventListener("click", async () => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("OIP Terms");
+    
+    ws.pageSetup = {
+    paperSize: 9,            // A4
+    orientation: 'portrait',
+    fitToPage: true,
+    fitToWidth: 1,
+    fitToHeight: false,
+    horizontalCentered: true,
+    margins: {
+        left: 0.5,
+        right: 0.5,
+        top: 0.75,
+        bottom: 0.75,
+        header: 0.3,
+        footer: 0.3
+    }
+};
+    
+    
+    ws.views = [{ showGridLines: false }];
+    ws.columns = [
+        { width: 10 }, // A spacer
+        { width: 33 }, // B labels
+        { width: 35 }  // C values
+    ];
+    ws.getColumn(3).alignment = { horizontal: 'right' };
+
+    let currentRow = 1;
+
+    // --------------- Helper Functions ----------------
+    function addRow(label, value, isCurrency = false, isPercent = false) {
+    ws.addRow([null, label, value]);
+    const cell = ws.getCell(`C${currentRow}`);
+
+    // Currency formatting
+    if (isCurrency) {
+        const num = parseFloat(value.toString().replace(/[£,]/g, '')) || 0;
+        cell.value = num;
+        cell.numFmt = '"£"#,##0.00';
+    }
+
+    // Percent formatting
+    if (isPercent) {
+        const num = parseFloat(value.toString().replace(/[% ,]/g, '')) || 0;
+        cell.value = num / 100;
+        cell.numFmt = '0.00%';
+    }
+
+    currentRow++;
+}
+
+
+    function addMergedHeader(title) {
+        ws.mergeCells(`B${currentRow}:C${currentRow}`);
+        const header = ws.getCell(`B${currentRow}`);
+        header.value = title;
+        header.font = { bold: true, size: 12 };
+        header.alignment = { horizontal: 'center', vertical: 'middle' };
+        header.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: '#C4D79B' } // #c4d79b
+        };
+        currentRow++;
+    }
+
+    addRow("", "");
+    addRow("", "");
+    // ---------------- BORROWER SUMMARY ----------------
+    addMergedHeader("Borrower Summary");
+    addRow("Borrower Company", borrowerCompany.value || "—");
+    addRow("Borrower Name", borrowerName.value || "—");
+    addRow("Security Address(s)", 
+        [securityAddress.value, document.getElementById("secondAddress")?.value]
+            .filter(a => a && a.trim() !== "")
+            .join(", ") || "—"
+    );
+    addRow("Broker Name", brokerName.value || "—");
+    addRow("Broker Firm", brokerFirm.value || "—");
+
+    addRow("", "");
+
+    // ---------------- LOAN RESULTS ----------------
+    addMergedHeader("Loan Parameters");
+    addRow("Gross Loan Amount", loanAmount.textContent || "0", true);
+    addRow("Total Arrangement Fee", arrangementFee.textContent || "0", true);
+    addRow("Net Loan After Deductions", netLoan.textContent || "0", true);
+    addRow("LTV", ltv.textContent || "—");
+    addRow("LTC", ltc.textContent || "—");
+    addRow("Loan Term", `${loanMonths.value || "0"} months`);
+    addRow("Purchase Price", purchasePrice.value || "0", true);
+    addRow("Market Value", propertyValue.value || "0", true); 
+    addRow("Total Retained Interest", retainedInterest.textContent || "0", true);
+    addRow("Broker Share of Arrangement Fee %", brokerFeePct.value || "0", false, true);
+
+    addRow("", "");
+
+    // ---------------- PROFITABILITY ----------------
+    addMergedHeader("Profitability");
+    addRow("Funding Rate (%)", fundingRate.value || "0", false, true);
+    addRow("Abigail Lending Rate (%)", abigailLendingRate.textContent || "0");
+    addRow("Abigail Interest Spread (%)", abigailInterestSpread.textContent || "0");
+    addRow("Abigail Interest Share (£)", abigailInterestShare.textContent || "0", true);
+    addRow("Arr. Fee (£)", profitArrangementFee.textContent || "0", true);
+    addRow("Exit Fee (£)", profitExitFee.textContent || "0", true);
+    addRow("Profit (£)", totalProfitability.textContent || "0", true);
+    addRow("Profit (%)", grossProfitPct.textContent || "0", false, true);
+
+
+// ---------------- IMPORTANT PARAGRAPH ----------------
+currentRow++;
+ws.mergeCells(`B${currentRow}:C${currentRow}`);
+const paragraphCell = ws.getCell(`B${currentRow}`);
+paragraphCell.value = 
+    "IMPORTANT: This Offer In Principle is illustrative only and is subject to satisfactory valuation, underwriting and legal due diligence. " +
+    "This Offer In Principle creates no legal duties or obligations and is not an offer or a commitment of any kind on the part of Abigail Finance Ltd or its affiliates. " +
+    "At any time prior to the formal execution of a loan transaction, we may terminate discussions without liability.";
+paragraphCell.font = { bold: true, size: 9 };
+paragraphCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+ws.getRow(currentRow).height = 80;
+
+// Optionally, color the paragraph cell to match your design
+paragraphCell.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFEBF1DE' } // light green background (#ebf1de)
+};
+
+    const websiteCell = ws.getCell("D39");
+    websiteCell.value = "www.abigailfinance.co.uk";
+    websiteCell.alignment = { horizontal: "right", vertical: "middle" };
+    websiteCell.font = { size: 8 };
+
+    
+    const cellD40 = ws.getCell("D40");
+    cellD40.value = "Abigail Finance is the trading name of Abigail Finance Ltd | Registered in England | Registered Number: 16529900";
+    cellD40.alignment = { horizontal: "right", vertical: "middle" };
+    cellD40.font = { size: 8 };
+
+    const cellD41 = ws.getCell("D41");
+    cellD41.value = "Registered Address: 6th Floor, 9 Appold Street, London, EC2A 2AP";
+    cellD41.alignment = { horizontal: "right", vertical: "middle" };
+    cellD41.font = { size: 8 };
+
+
+    ["D39", "D40", "D41"].forEach(addr => {
+    const cell = ws.getCell(addr);
+        cell.font = {
+            ...cell.font,
+            color: { argb: "FF008000" }
+        };
+    });
+
+    // ---------------- COLOR COLUMN B ----------------
+    ws.getColumn(2).eachCell({ includeEmpty: false }, (cell) => {
+        if (cell.value && cell.value !== "—") {
+            cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFEBF1DE' } // #ebf1de
+            };
+        }
+    });
+
+    // ---------------- SET REGULAR TEXT SIZE 10 ----------------
+    ws.eachRow({ includeEmpty: true }, (row) => {
+    row.eachCell({ includeEmpty: true }, (cell) => {
+        if (
+            !["D39", "D40", "D41"].includes(cell.address) &&
+            (!cell.font || (!cell.font.bold && cell.font.size !== 12))
+        ) {
+            cell.font = {
+                ...cell.font,
+                size: 10
+            };
+        }
+    });
+});
+
+
+    // ---------------- SAVE FILE ----------------
+    const today = new Date();
+    const dateStr = today.toISOString().slice(0, 10);
+    const filename = `${securityAddress.value || "Loan-Calculator-Results"}-${dateStr}.xlsx`;
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+function updateBorrowerSummary() {
+  document.getElementById("resBorrowerCompany").textContent =
+    borrowerCompany.value.trim() || "—";
+
+  document.getElementById("resBorrowerName").textContent =
+    borrowerName.value.trim() || "—";
+
+  document.getElementById("resSecurityAddress").textContent =
+    securityAddress.value.trim() || "—";
+
+  document.getElementById("resBrokerName").textContent =
+    brokerName.value.trim() || "—";
+
+  document.getElementById("resBrokerFirm").textContent =
+    brokerFirm.value.trim() || "—";
+}
+[
+  borrowerCompany,
+  borrowerName,
+  securityAddress,
+  brokerName,
+  brokerFirm
+].forEach(el => el.addEventListener("input", updateBorrowerSummary));
+
+
+</script>
+
+</body>
+</html>
